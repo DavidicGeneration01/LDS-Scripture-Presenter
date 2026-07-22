@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
-import { Search, BookOpen, Settings, Info, History, MonitorPlay, Link as LinkIcon, PenTool, ChevronLeft, ChevronRight, Type, Star, Pin, PlusSquare } from 'lucide-react';
+import { 
+  Search, BookOpen, Settings, Info, History, MonitorPlay, 
+  Link as LinkIcon, PenTool, ChevronLeft, ChevronRight, Type, 
+  Star, Pin, PlusSquare, Zap
+} from 'lucide-react';
 import { VerseData, AIInsight, PresentationSettings, ThemeMode, HistoryItem, Collection } from '../types';
+import { cn } from '../utils/cn';
 
 interface ControlPanelProps {
   onSearch: (query: string) => void;
@@ -37,8 +42,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onLaunchLive,
   onManualPresent,
   onNext,
-  onPrev
-  ,favorites, collections, pinned, onToggleFavorite, onTogglePinned, onCreateCollection, onAddToCollection, onRemoveFromCollection
+  onPrev,
+  favorites, 
+  collections, 
+  pinned, 
+  onToggleFavorite, 
+  onTogglePinned, 
+  onCreateCollection, 
+  onAddToCollection, 
+  onRemoveFromCollection
 }) => {
   const [query, setQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'search' | 'settings' | 'insight' | 'manual'>('search');
@@ -54,8 +66,17 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (manualRef.trim() && manualText.trim()) {
-      const manualVerse: VerseData = { reference: manualRef, text: manualText, book: 'Manual', chapter: 0, verse: 0, version: 'Custom' };
+      const manualVerse: VerseData = { 
+        reference: manualRef, 
+        text: manualText, 
+        book: 'Manual', 
+        chapter: 0, 
+        verse: 0, 
+        version: 'Custom' 
+      };
       onManualPresent(manualVerse);
+      setManualRef('');
+      setManualText('');
     }
   };
 
@@ -85,88 +106,245 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     setShowCollections(false);
   };
 
+  const isFavorited = currentVerse && favorites.some(f => f.reference === currentVerse.reference);
+  const isPinned = currentVerse && pinned && pinned.reference === currentVerse.reference;
+
   return (
-    <div className="h-full flex flex-col bg-gray-950 border-r border-gray-800 text-gray-300 w-full shadow-2xl z-30">
-      <div className="p-6 border-b border-gray-800 bg-gray-900">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3 text-sky-500">
-            <BookOpen className="w-6 h-6" />
-            <h1 className="text-xl font-display font-bold tracking-wider">Mormon Scripture Presenter</h1>
-          </div>
-          <div className="text-xs text-gray-500 uppercase tracking-widest">Operator</div>
-        </div>
-        <div className="flex space-x-2">
-          <button onClick={onLaunchLive} className="flex-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-navy-600 to-navy-500 hover:from-navy-500 hover:to-navy-400 text-white font-bold py-3 px-2 rounded-lg transition-all shadow-lg hover:shadow-navy-500/20 active:scale-95 border border-navy-400/20" title="Open Live Window">
-            <MonitorPlay size={18} />
-            <span className="text-sm">Launch Live</span>
-          </button>
-          <button onClick={handleCopyLink} className="flex-none px-3 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white rounded-lg transition-colors border border-gray-700" title="Copy Live Link (Use if popup blocked)">
-            <LinkIcon size={18} />
-          </button>
-          {currentVerse && (
-            <>
-              <button onClick={() => onToggleFavorite(currentVerse)} className={`flex-none px-3 bg-gray-800 hover:bg-gray-700 text-${favorites.some(f=>f.reference===currentVerse.reference) ? 'yellow-400' : 'gray-400'} hover:text-white rounded-lg transition-colors border border-gray-700`} title="Toggle Favorite">
-                <Star size={18} />
-              </button>
-              <button onClick={() => onTogglePinned(currentVerse)} className={`flex-none px-3 bg-gray-800 hover:bg-gray-700 text-${pinned && pinned.reference===currentVerse.reference ? 'emerald-400' : 'gray-400'} hover:text-white rounded-lg transition-colors border border-gray-700`} title="Pin Verse">
-                <Pin size={18} />
-              </button>
-              <div className="relative">
-                <button onClick={() => handleSaveToCollection(currentVerse)} className="flex-none px-3 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white rounded-lg transition-colors border border-gray-700" title="Add to Collection">
-                  <PlusSquare size={18} />
-                </button>
-                {showCollections && (
-                  <div className="absolute right-0 mt-2 w-56 bg-gray-900 border border-gray-800 rounded shadow-lg z-40 p-2">
-                    <div className="text-xs text-gray-400 mb-2">Choose a collection</div>
-                    {collections.map(c => (
-                      <button key={c.id} onClick={() => handleChooseCollection(c.id)} className="w-full text-left py-1 px-2 rounded hover:bg-gray-800 text-sm">{c.name} ({c.items.length})</button>
-                    ))}
-                    <div className="mt-2 border-t border-gray-800 pt-2">
-                      <button onClick={() => { const n = prompt('New collection name:'); if (n) { const col = onCreateCollection(n); onAddToCollection(col.id, currentVerse); setShowCollections(false); } }} className="w-full text-left py-1 px-2 rounded hover:bg-gray-800 text-sm text-sky-400">+ Create Collection</button>
-                    </div>
-                  </div>
-                )}
+    <div className="h-full flex flex-col bg-gradient-dark text-white/90 w-full z-30 overflow-hidden">
+      {/* Header Section */}
+      <div className="flex-shrink-0 px-6 py-5 glass-effect-md border-b border-white/10">
+        <div className="space-y-4">
+          {/* Title */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg glass-button flex items-center justify-center">
+                <BookOpen size={18} className="text-blue-400" />
               </div>
-            </>
-          )}
+              <h1 className="text-heading-1 font-display font-semibold">Scripture</h1>
+            </div>
+            <p className="text-small text-white/50 ml-11">Operator Control</p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 flex-wrap">
+            <button 
+              onClick={onLaunchLive}
+              className={cn(
+                'flex-1 min-w-[120px] flex items-center justify-center gap-2',
+                'px-4 py-2.5 rounded-lg glass-button',
+                'hover:bg-blue-500/30 hover:border-blue-400/50',
+                'transition-all duration-200 font-medium text-small',
+                'focus:outline-none focus:ring-2 focus:ring-blue-500/50'
+              )}
+              title="Open Live Window"
+            >
+              <MonitorPlay size={16} className="text-blue-400" />
+              <span>Launch Live</span>
+            </button>
+            
+            <button 
+              onClick={handleCopyLink}
+              className={cn(
+                'px-3 py-2.5 rounded-lg glass-button',
+                'hover:bg-white/10 transition-all duration-200',
+                'focus:outline-none focus:ring-2 focus:ring-white/50'
+              )}
+              title="Copy Live Link"
+            >
+              <LinkIcon size={16} className="text-white/60" />
+            </button>
+
+            {currentVerse && (
+              <>
+                <button 
+                  onClick={() => onToggleFavorite(currentVerse)}
+                  className={cn(
+                    'px-3 py-2.5 rounded-lg transition-all duration-200',
+                    'focus:outline-none focus:ring-2 focus:ring-white/50',
+                    isFavorited 
+                      ? 'glass-effect-accent text-yellow-400' 
+                      : 'glass-button text-white/60 hover:text-white'
+                  )}
+                  title="Toggle Favorite"
+                >
+                  <Star size={16} className={isFavorited ? 'fill-current' : ''} />
+                </button>
+
+                <button 
+                  onClick={() => onTogglePinned(currentVerse)}
+                  className={cn(
+                    'px-3 py-2.5 rounded-lg transition-all duration-200',
+                    'focus:outline-none focus:ring-2 focus:ring-white/50',
+                    isPinned 
+                      ? 'glass-effect-accent text-green-400' 
+                      : 'glass-button text-white/60 hover:text-white'
+                  )}
+                  title="Pin Verse"
+                >
+                  <Pin size={16} />
+                </button>
+
+                <div className="relative">
+                  <button 
+                    onClick={() => handleSaveToCollection(currentVerse)}
+                    className="px-3 py-2.5 rounded-lg glass-button hover:bg-white/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    title="Add to Collection"
+                  >
+                    <PlusSquare size={16} className="text-white/60" />
+                  </button>
+
+                  {showCollections && (
+                    <div className="absolute right-0 mt-2 w-64 glass-effect-lg rounded-lg shadow-xl z-40 p-3 animate-fade-in-up">
+                      <p className="text-micro text-white/60 mb-3 uppercase tracking-wider">Select Collection</p>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {collections.map(c => (
+                          <button
+                            key={c.id}
+                            onClick={() => handleChooseCollection(c.id)}
+                            className={cn(
+                              'w-full text-left py-2 px-3 rounded-lg transition-all duration-200',
+                              'glass-button hover:bg-white/10 text-small flex justify-between items-center'
+                            )}
+                          >
+                            <span>{c.name}</span>
+                            <span className="text-micro text-white/50">{c.items.length}</span>
+                          </button>
+                        ))}
+                      </div>
+                      <button 
+                        onClick={() => { 
+                          const n = prompt('New collection name:'); 
+                          if (n) { 
+                            const col = onCreateCollection(n); 
+                            onAddToCollection(col.id, currentVerse); 
+                            setShowCollections(false); 
+                          } 
+                        }}
+                        className="w-full mt-3 pt-3 border-t border-white/10 py-2 px-3 rounded-lg text-small text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        + Create Collection
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
-        <p className="text-[10px] text-gray-500 text-center mt-2">Opens a separate window for projector/HDMI</p>
       </div>
 
-      <div className="flex border-b border-gray-800 text-sm overflow-x-auto no-scrollbar">
-        <button onClick={() => setActiveTab('search')} className={`flex-1 py-3 px-2 flex justify-center items-center hover:bg-gray-800 transition-colors ${activeTab === 'search' ? 'text-sky-500 border-b-2 border-sky-500' : 'text-gray-500'}`}><Search size={16} className="mr-1" /> Search</button>
-        <button onClick={() => setActiveTab('manual')} className={`flex-1 py-3 px-2 flex justify-center items-center hover:bg-gray-800 transition-colors ${activeTab === 'manual' ? 'text-sky-500 border-b-2 border-sky-500' : 'text-gray-500'}`}><PenTool size={16} className="mr-1" /> Manual</button>
-        <button onClick={() => setActiveTab('insight')} className={`flex-1 py-3 px-2 flex justify-center items-center hover:bg-gray-800 transition-colors ${activeTab === 'insight' ? 'text-sky-500 border-b-2 border-sky-500' : 'text-gray-500'}`}><Info size={16} className="mr-1" /> Insight</button>
-        <button onClick={() => setActiveTab('settings')} className={`flex-1 py-3 px-2 flex justify-center items-center hover:bg-gray-800 transition-colors ${activeTab === 'settings' ? 'text-sky-500 border-b-2 border-sky-500' : 'text-gray-500'}`}><Settings size={16} className="mr-1" /> Style</button>
+      {/* Tab Navigation */}
+      <div className="flex-shrink-0 flex border-b border-white/10 px-2 gap-1">
+        {(['search', 'manual', 'insight', 'settings'] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={cn(
+              'flex-1 flex items-center justify-center gap-2 py-3 px-2',
+              'text-small font-medium transition-all duration-200 relative',
+              'focus:outline-none',
+              activeTab === tab
+                ? 'text-blue-400'
+                : 'text-white/50 hover:text-white/70'
+            )}
+          >
+            {tab === 'search' && <Search size={16} />}
+            {tab === 'manual' && <PenTool size={16} />}
+            {tab === 'insight' && <Info size={16} />}
+            {tab === 'settings' && <Settings size={16} />}
+            <span className="capitalize">{tab}</span>
+            {activeTab === tab && (
+              <div className="absolute bottom-0 left-2 right-2 h-0.5 bg-blue-400 rounded-full" />
+            )}
+          </button>
+        ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-6">
+      {/* Content Area */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        {/* SEARCH TAB */}
         {activeTab === 'search' && (
-          <div className="space-y-6">
+          <div className="p-6 space-y-6">
+            {/* Search Bar */}
             <div className="space-y-3">
               <form onSubmit={handleSearchSubmit} className="relative">
-                <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ex: John 3:16, 1 Nephi 3:7..." className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg pl-4 pr-12 py-3 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder-gray-600" />
-                <button type="submit" disabled={isLoading} className="absolute right-2 top-2 p-1.5 bg-navy-600 hover:bg-navy-500 text-white rounded-md transition-colors disabled:opacity-50"><Search size={18} /></button>
+                <input 
+                  type="text" 
+                  value={query} 
+                  onChange={(e) => setQuery(e.target.value)} 
+                  placeholder="Ex: John 3:16, 1 Nephi 3:7..." 
+                  className={cn(
+                    'w-full glass-input rounded-lg pl-4 pr-12 py-3',
+                    'text-body placeholder-white/30',
+                    'focus:outline-none focus:ring-2 focus:ring-blue-500/50'
+                  )}
+                />
+                <button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className={cn(
+                    'absolute right-2 top-2 p-2 rounded-lg',
+                    'glass-button hover:bg-blue-500/30',
+                    'transition-all duration-200 disabled:opacity-50'
+                  )}
+                >
+                  <Search size={18} className="text-blue-400" />
+                </button>
               </form>
-              <p className="text-xs text-gray-500 ml-1">Supports Bible, Book of Mormon, D&C, and PGP</p>
-
-              {currentVerse && (
-                <div className="flex items-center space-x-2 mt-2 bg-gray-900 p-2 rounded-lg border border-gray-800">
-                  <button onClick={onPrev} className="p-2 hover:bg-gray-800 rounded text-gray-400 hover:text-white transition-colors" title="Previous Verse (Arrow Left)"><ChevronLeft size={20} /></button>
-                  <div className="flex-1 text-center"><span className="text-xs font-bold text-sky-500 uppercase tracking-wider">Current Verse</span><div className="text-sm font-serif text-white truncate">{currentVerse.reference}</div></div>
-                  <button onClick={onNext} className="p-2 hover:bg-gray-800 rounded text-gray-400 hover:text-white transition-colors" title="Next Verse (Arrow Right)"><ChevronRight size={20} /></button>
-                </div>
-              )}
+              <p className="text-micro text-white/50">Bible, Book of Mormon, D&C, Pearl of Great Price</p>
             </div>
 
+            {/* Current Verse Navigation */}
+            {currentVerse && (
+              <div className="glass-effect-md rounded-lg p-4 space-y-3">
+                <p className="text-micro text-white/50 uppercase tracking-wider font-semibold">Current Verse</p>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={onPrev}
+                    className="p-2 rounded-lg glass-button hover:bg-white/10 transition-all duration-200"
+                    title="Previous (← Arrow)"
+                  >
+                    <ChevronLeft size={18} className="text-white/60" />
+                  </button>
+                  <div className="flex-1 text-center">
+                    <h3 className="text-heading-2 font-display text-blue-400">
+                      {currentVerse.reference}
+                    </h3>
+                  </div>
+                  <button 
+                    onClick={onNext}
+                    className="p-2 rounded-lg glass-button hover:bg-white/10 transition-all duration-200"
+                    title="Next (→ Arrow)"
+                  >
+                    <ChevronRight size={18} className="text-white/60" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* History */}
             {history.length > 0 && (
-              <div>
-                <div className="flex items-center space-x-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-3"><History size={12} /><span>Recent Verses</span></div>
+              <div className="space-y-3">
+                <p className="text-micro text-white/50 uppercase tracking-wider font-semibold flex items-center gap-2">
+                  <History size={14} /> Recent
+                </p>
                 <div className="space-y-2">
-                  {history.map((item) => (
-                    <button key={item.id} onClick={() => onSelectHistory(item)} className="w-full text-left p-3 rounded bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 transition-all group">
-                      <div className="font-bold text-sky-100 group-hover:text-sky-400 transition-colors">{item.verse.reference}</div>
-                      <div className="text-xs text-gray-500 truncate mt-1 font-serif italic">"{item.verse.text}"</div>
+                  {history.slice(0, 5).map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => onSelectHistory(item)}
+                      className={cn(
+                        'w-full text-left p-3 rounded-lg glass-effect',
+                        'hover:bg-white/10 transition-all duration-200',
+                        'focus:outline-none focus:ring-2 focus:ring-blue-500/50'
+                      )}
+                    >
+                      <h4 className="text-body font-semibold text-blue-300 group-hover:text-blue-200">
+                        {item.verse.reference}
+                      </h4>
+                      <p className="text-small text-white/50 line-clamp-2 mt-1 font-serif italic">
+                        "{item.verse.text.substring(0, 60)}..."
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -175,82 +353,221 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           </div>
         )}
 
+        {/* MANUAL TAB */}
         {activeTab === 'manual' && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="bg-blue-900/20 border border-blue-900/50 p-3 rounded text-xs text-blue-200">Use this mode when offline or for custom text.</div>
+          <div className="p-6 space-y-4 animate-fade-in">
+            <div className="glass-effect-lg rounded-lg p-4">
+              <p className="text-small text-blue-300 flex items-center gap-2">
+                <Zap size={16} className="text-yellow-400" />
+                Use this mode for custom content or when offline
+              </p>
+            </div>
+
             <form onSubmit={handleManualSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Reference / Title</label>
-                <input type="text" value={manualRef} onChange={(e) => setManualRef(e.target.value)} placeholder="e.g. Alma 5:14" className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-sky-500" required />
+                <label className="block text-micro text-white/60 uppercase tracking-wider font-semibold mb-2">
+                  Reference / Title
+                </label>
+                <input 
+                  type="text" 
+                  value={manualRef} 
+                  onChange={(e) => setManualRef(e.target.value)} 
+                  placeholder="e.g. Alma 5:14" 
+                  className="w-full glass-input rounded-lg px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  required 
+                />
               </div>
+
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Scripture Text</label>
-                <textarea value={manualText} onChange={(e) => setManualText(e.target.value)} placeholder="And now behold, I ask of you, my brethren of the church..." className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-2 h-40 focus:outline-none focus:border-sky-500 font-serif leading-relaxed" required />
+                <label className="block text-micro text-white/60 uppercase tracking-wider font-semibold mb-2">
+                  Scripture Text
+                </label>
+                <textarea 
+                  value={manualText} 
+                  onChange={(e) => setManualText(e.target.value)} 
+                  placeholder="Enter the scripture text here..." 
+                  className="w-full glass-input rounded-lg px-4 py-2.5 h-40 text-body font-serif leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
+                  required 
+                />
               </div>
-              <button type="submit" className="w-full bg-navy-600 hover:bg-navy-500 text-white font-bold py-3 rounded-lg shadow-lg transition-all border border-navy-400/20">Present Now</button>
+
+              <button 
+                type="submit"
+                className={cn(
+                  'w-full px-4 py-3 rounded-lg glass-button',
+                  'hover:bg-blue-500/30 hover:border-blue-400/50',
+                  'transition-all duration-200 font-semibold text-body',
+                  'focus:outline-none focus:ring-2 focus:ring-blue-500/50'
+                )}
+              >
+                Present Now
+              </button>
             </form>
           </div>
         )}
 
+        {/* INSIGHT TAB */}
         {activeTab === 'insight' && (
-          <div className="space-y-6 animate-fadeIn">
+          <div className="p-6 animate-fade-in">
             {!currentVerse ? (
-              <div className="text-center text-gray-600 py-10"><Info className="mx-auto h-10 w-10 mb-2 opacity-20" /><p>Select a verse to see insights.</p></div>
+              <div className="flex flex-col items-center justify-center py-16 space-y-4 text-center">
+                <div className="w-12 h-12 rounded-lg glass-effect flex items-center justify-center opacity-50">
+                  <Info size={24} className="text-white/50" />
+                </div>
+                <p className="text-body text-white/60">Select a verse to see insights</p>
+              </div>
             ) : !insight ? (
-              <div className="flex flex-col items-center justify-center py-10 space-y-3"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sky-500"></div><p className="text-sm text-gray-500">Asking AI for insights...</p><p className="text-xs text-gray-600">(Requires Internet)</p></div>
+              <div className="flex flex-col items-center justify-center py-16 space-y-4">
+                <div className="w-8 h-8 rounded-full border-2 border-blue-400 border-t-transparent animate-spin" />
+                <p className="text-small text-white/70">Loading insights...</p>
+                <p className="text-micro text-white/50">(Requires Internet & API Key)</p>
+              </div>
             ) : (
-              <div className="space-y-6">
-                <div className="bg-gray-900 p-4 rounded-lg border border-gray-800"><h3 className="text-sky-500 text-xs font-bold uppercase tracking-widest mb-2">Context</h3><p className="text-sm text-gray-300 leading-relaxed">{insight.context}</p></div>
-                <div className="bg-gray-900 p-4 rounded-lg border border-gray-800"><h3 className="text-sky-500 text-xs font-bold uppercase tracking-widest mb-2">Theological Meaning</h3><p className="text-sm text-gray-300 leading-relaxed">{insight.theology}</p></div>
-                <div className="bg-gray-900 p-4 rounded-lg border border-gray-800"><h3 className="text-sky-500 text-xs font-bold uppercase tracking-widest mb-2">Application</h3><p className="text-sm text-gray-300 leading-relaxed">{insight.application}</p></div>
+              <div className="space-y-4">
+                {insight.context && (
+                  <div className="glass-effect-md rounded-lg p-4 space-y-2">
+                    <h3 className="text-micro text-white/70 uppercase tracking-wider font-semibold">Context</h3>
+                    <p className="text-small text-white/80 leading-relaxed">{insight.context}</p>
+                  </div>
+                )}
+                {insight.theology && (
+                  <div className="glass-effect-md rounded-lg p-4 space-y-2">
+                    <h3 className="text-micro text-white/70 uppercase tracking-wider font-semibold">Theological Meaning</h3>
+                    <p className="text-small text-white/80 leading-relaxed">{insight.theology}</p>
+                  </div>
+                )}
+                {insight.application && (
+                  <div className="glass-effect-md rounded-lg p-4 space-y-2">
+                    <h3 className="text-micro text-white/70 uppercase tracking-wider font-semibold">Application</h3>
+                    <p className="text-small text-white/80 leading-relaxed">{insight.application}</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
         )}
 
+        {/* SETTINGS TAB */}
         {activeTab === 'settings' && (
-          <div className="space-y-6 animate-fadeIn">
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Font Sizing</label>
-              <div className="bg-gray-900 p-3 rounded-lg border border-gray-800 space-y-4">
-                <div className="flex bg-gray-800 rounded p-1">
-                  <button onClick={() => updateSettings({ fontMode: 'auto' })} className={`flex-1 py-1.5 rounded text-xs uppercase font-bold transition-all ${settings.fontMode === 'auto' ? 'bg-sky-600 text-white shadow' : 'text-gray-400 hover:text-white'}`}>Auto</button>
-                  <button onClick={() => updateSettings({ fontMode: 'manual' })} className={`flex-1 py-1.5 rounded text-xs uppercase font-bold transition-all ${settings.fontMode === 'manual' ? 'bg-sky-600 text-white shadow' : 'text-gray-400 hover:text-white'}`}>Manual</button>
+          <div className="p-6 space-y-6 animate-fade-in">
+            {/* Font Sizing */}
+            <div className="space-y-3">
+              <p className="text-micro text-white/70 uppercase tracking-wider font-semibold">Font Sizing</p>
+              <div className="glass-effect-md rounded-lg p-4 space-y-4">
+                <div className="flex gap-2">
+                  {(['auto', 'manual'] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => updateSettings({ fontMode: mode })}
+                      className={cn(
+                        'flex-1 py-2 px-3 rounded-lg font-semibold text-small',
+                        'transition-all duration-200 uppercase',
+                        settings.fontMode === mode
+                          ? 'glass-effect-accent text-white'
+                          : 'glass-button text-white/60 hover:text-white'
+                      )}
+                    >
+                      {mode}
+                    </button>
+                  ))}
                 </div>
 
-                <div className={`transition-opacity duration-300 ${settings.fontMode === 'auto' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
-                  <div className="flex justify-between text-xs text-gray-400 mb-2"><span className="flex items-center"><Type size={12} className="mr-1"/> Small</span><span className="flex items-center"><Type size={16} className="mr-1"/> Large</span></div>
-                  <input type="range" min="2" max="10" step="0.1" value={settings.fontSize || 4} onChange={(e) => updateSettings({ fontSize: parseFloat(e.target.value) })} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-sky-500" />
-                  <div className="text-right text-xs text-sky-500 mt-1">{settings.fontSize?.toFixed(1)}rem</div>
-                </div>
+                {settings.fontMode === 'manual' && (
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-small text-white/70 flex items-center gap-2">
+                        <Type size={14} /> Size
+                      </span>
+                      <span className="text-heading-2 font-display text-blue-400">
+                        {settings.fontSize?.toFixed(1)}rem
+                      </span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="2" 
+                      max="10" 
+                      step="0.1" 
+                      value={settings.fontSize || 4}
+                      onChange={(e) => updateSettings({ fontSize: parseFloat(e.target.value) })}
+                      className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-blue-400"
+                    />
+                  </div>
+                )}
               </div>
-              <p className="text-[10px] text-gray-500 mt-2">{settings.fontMode === 'auto' ? 'Font size automatically adjusts to fit the slide.' : 'Manually override font size.'}</p>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Theme</label>
+            {/* Theme */}
+            <div className="space-y-3">
+              <p className="text-micro text-white/70 uppercase tracking-wider font-semibold">Theme</p>
               <div className="grid grid-cols-2 gap-2">
                 {(Object.values(ThemeMode) as ThemeMode[]).map((mode) => (
-                  <button key={mode} onClick={() => updateSettings({ theme: mode })} className={`p-3 rounded-lg border text-sm font-medium transition-all ${settings.theme === mode ? 'border-sky-500 bg-gray-800 text-sky-400' : 'border-gray-800 bg-gray-900 text-gray-400 hover:border-gray-600'}`}>{mode}</button>
+                  <button
+                    key={mode}
+                    onClick={() => updateSettings({ theme: mode })}
+                    className={cn(
+                      'py-2 px-3 rounded-lg text-small font-medium',
+                      'transition-all duration-200 capitalize',
+                      settings.theme === mode
+                        ? 'glass-effect-accent text-white border-blue-400/50'
+                        : 'glass-button text-white/60 hover:text-white'
+                    )}
+                  >
+                    {mode.toLowerCase()}
+                  </button>
                 ))}
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Alignment</label>
-              <div className="flex bg-gray-900 rounded-lg p-1 border border-gray-800">
-                {['left', 'center', 'right'].map((align) => (
-                  <button key={align} onClick={() => updateSettings({ alignment: align as any })} className={`flex-1 py-2 rounded text-xs uppercase font-bold transition-colors ${settings.alignment === align ? 'bg-gray-800 text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}>{align}</button>
+            {/* Alignment */}
+            <div className="space-y-3">
+              <p className="text-micro text-white/70 uppercase tracking-wider font-semibold">Alignment</p>
+              <div className="flex gap-2 glass-effect-md rounded-lg p-2">
+                {(['left', 'center', 'right'] as const).map((align) => (
+                  <button
+                    key={align}
+                    onClick={() => updateSettings({ alignment: align })}
+                    className={cn(
+                      'flex-1 py-2 px-3 rounded-lg text-small font-medium',
+                      'transition-all duration-200 capitalize',
+                      settings.alignment === align
+                        ? 'glass-effect-accent text-white'
+                        : 'text-white/60 hover:text-white'
+                    )}
+                  >
+                    {align}
+                  </button>
                 ))}
               </div>
             </div>
 
-            <div className="flex items-center justify-between py-2"><span className="text-sm text-gray-400">Show Reference</span><button onClick={() => updateSettings({ showReference: !settings.showReference })} className={`w-11 h-6 flex items-center rounded-full transition-colors ${settings.showReference ? 'bg-sky-600' : 'bg-gray-800'}`}><span className={`w-4 h-4 bg-white rounded-full transform transition-transform ml-1 ${settings.showReference ? 'translate-x-5' : ''}`} /></button></div>
+            {/* Show Reference Toggle */}
+            <div className="glass-effect-md rounded-lg p-4 flex items-center justify-between">
+              <p className="text-body text-white/80">Show Reference</p>
+              <button
+                onClick={() => updateSettings({ showReference: !settings.showReference })}
+                className={cn(
+                  'relative w-12 h-6 rounded-full transition-all duration-200',
+                  'focus:outline-none focus:ring-2 focus:ring-blue-500/50',
+                  settings.showReference ? 'bg-blue-500/40' : 'bg-white/10'
+                )}
+              >
+                <span
+                  className={cn(
+                    'absolute top-1 left-1 w-4 h-4 bg-white rounded-full',
+                    'transition-transform duration-200',
+                    settings.showReference ? 'translate-x-6' : ''
+                  )}
+                />
+              </button>
+            </div>
           </div>
         )}
       </div>
 
-      <div className="p-4 bg-gray-900 border-t border-gray-800 text-xs text-gray-600 text-center">Designed by David O. Alade</div>
+      {/* Footer */}
+      <div className="flex-shrink-0 px-6 py-4 glass-effect-md border-t border-white/10 text-center text-micro text-white/40">
+        Designed by David O. Alade
+      </div>
     </div>
   );
 };

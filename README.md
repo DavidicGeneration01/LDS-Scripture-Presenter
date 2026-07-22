@@ -23,43 +23,6 @@ Notes
 - Uses `BroadcastChannel` + `localStorage` for syncing state between windows.
 
 
-- phase 5
-Cloud Sync
-
-Accounts
-
-Storage
-
-Sharing
-
-Collaboration
-
-
-- phase 6
-Performance
-
-Caching
-
-Offline Database
-
-Search Index
-
-Optimization
-
-
-- phase 7
-Enterprise Features
-
-Service Planning
-
-Scheduling
-
-Remote Control
-
-Analytics
-
-Administration
-
 
 Overview
 This is my Python football analytics project. It takes match event data and turns it into a Momentum Index, team/player ratings, a Streamlit dashboard, and PDF/Excel/HTML reports.
@@ -79,13 +42,14 @@ docker
 
 Python Programming Language
 Useful Websites
-LinkedIn learning
-LinkedIn learning
-LinkedIn learning
-Youtube - ciao.football
-Youtube - ciao.football
-Youtube - ciao.football
-Youtube - ciao.football
-Youtube - ciao.football
-preview
-python -m streamlit run src/dashboard.py
+
+Youtube - https://www.youtube.com/playlist?list=PLF3C8E9D4F6A1B6F4&utm_source=chatgpt.com (Official ProPresenter Basics Playlist (About 2+ hours))
+Youtube - https://www.youtube.com/@PaulAlanClifford?utm_source=chatgpt.com (Paul Alan Clifford - ProPresenter Tutorials)
+Youtube - https://support.easyworship.com/support/solutions/6000132416?utm_source=chatgpt.com (EasyWorship Video Library)
+Youtube - https://www.youtube.com/@MicrosoftDeveloper?utm_source=chatgpt.com (Microsoft Developer YouTube Channel)
+Youtube - https://www.churchofjesuschrist.org/developer?utm_source=chatgpt.com (Church of Jesus Christ Developer Resources)
+Youtube - https://github.com/search?q=book+of+mormon+api&type=repositories&utm_source=chatgpt.com (Scriptures API GitHub Search)
+
+
+# preview
+npm run dev

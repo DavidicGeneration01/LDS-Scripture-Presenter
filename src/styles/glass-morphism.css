@@ -1,0 +1,275 @@
+/**
+ * Glassmorphism & Modern UI Effects
+ * Premium visual effects for luxury feel
+ */
+
+/* ============================================
+   GLASS SURFACES
+   ============================================ */
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-effect-md {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.glass-effect-lg {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-effect-accent {
+  background: rgba(0, 102, 204, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 102, 204, 0.3);
+}
+
+.glass-effect-dark {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================
+   SURFACE ELEVATIONS
+   ============================================ */
+
+.surface-base {
+  background: rgba(26, 26, 46, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.surface-raised {
+  background: rgba(37, 37, 65, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.surface-elevated {
+  background: rgba(45, 45, 74, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   INTERACTIVE GLASS ELEMENTS
+   ============================================ */
+
+.glass-button {
+  background: rgba(0, 102, 204, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 102, 204, 0.3);
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-button:hover {
+  background: rgba(0, 102, 204, 0.2);
+  border-color: rgba(0, 102, 204, 0.5);
+  box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);
+}
+
+.glass-button:active {
+  background: rgba(0, 102, 204, 0.3);
+  border-color: rgba(0, 102, 204, 0.6);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(245, 245, 245, 1);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 102, 204, 0.5);
+  outline: none;
+  box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);
+}
+
+.glass-card {
+  background: rgba(37, 37, 65, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: rgba(37, 37, 65, 0.7);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   GRADIENT OVERLAYS & BACKGROUNDS
+   ============================================ */
+
+.gradient-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 102, 204, 0.1) 0%,
+    rgba(0, 212, 255, 0.05) 100%
+  );
+}
+
+.gradient-dark {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 15, 15, 0.95) 0%,
+    rgba(26, 26, 46, 0.95) 100%
+  );
+}
+
+.gradient-accent {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 102, 204, 0.2) 0%,
+    rgba(0, 212, 255, 0.1) 100%
+  );
+}
+
+/* ============================================
+   BORDER EFFECTS
+   ============================================ */
+
+.border-glow {
+  border: 1px solid rgba(0, 102, 204, 0.3);
+  box-shadow: inset 0 0 10px rgba(0, 102, 204, 0.1), 0 0 10px rgba(0, 102, 204, 0.1);
+}
+
+.border-gradient {
+  position: relative;
+  border: 1px solid transparent;
+  background: linear-gradient(rgba(37, 37, 65, 0.8), rgba(37, 37, 65, 0.8)) padding-box,
+              linear-gradient(135deg, #0066cc, #00d4ff) border-box;
+}
+
+/* ============================================
+   SHADOW VARIATIONS
+   ============================================ */
+
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);
+}
+
+.shadow-glow-lg {
+  box-shadow: 0 0 40px rgba(0, 102, 204, 0.3);
+}
+
+.shadow-inset {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.shadow-soft {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.shadow-medium {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.shadow-hard {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   BACKDROP BLUR VARIATIONS
+   ============================================ */
+
+.blur-xs {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.blur-sm {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.blur-lg {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.blur-xl {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* ============================================
+   UTILITY ANIMATIONS
+   ============================================ */
+
+.glass-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================
+   FOCUS & HOVER STATES
+   ============================================ */
+
+.glass-focusable:focus-within {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(0, 102, 204, 0.5) !important;
+  outline: none;
+}
+
+.glass-interactive:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 20px rgba(0, 102, 204, 0.15);
+}
+
+.glass-interactive:active {
+  transform: scale(0.98);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}

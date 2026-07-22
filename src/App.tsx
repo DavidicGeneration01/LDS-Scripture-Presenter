@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { ThemeProvider } from './context/ThemeContext';
+import ModernLayout from './components/Layout/ModernLayout';
 import ControlPanel from './components/ControlPanel';
 import SlideDisplay from './components/SlideDisplay';
 import { VerseData, AIInsight, PresentationSettings, ThemeMode, HistoryItem, BroadcastMessage, Collection } from './types';
@@ -8,7 +10,7 @@ import storage from './services/storageService';
 
 const BROADCAST_CHANNEL_NAME = 'lumina_live_channel';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [isReceiverMode] = useState(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -332,36 +334,96 @@ const App: React.FC = () => {
 
   if (isReceiverMode) {
     return (
-      <div id="presentation-container" className="h-screen w-screen bg-black overflow-hidden relative">
-        <SlideDisplay verse={currentVerse} settings={settings} isFullscreen={isFullscreen} toggleFullscreen={toggleFullscreen} isLoading={false} isLive={true} loadingMessage="" />
-        {!currentVerse && (
-          <div className="absolute bottom-4 left-4 flex items-center space-x-2 bg-black/50 px-3 py-1 rounded text-xs text-gray-400 font-mono z-50">
-            <div className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
-            <span>{connectionStatus === 'connected' ? 'Live Signal Active' : 'Disconnected'}</span>
-          </div>
-        )}
-      </div>
+      <ModernLayout isLive={true} connectionStatus={connectionStatus}>
+        <div id="presentation-container" className="h-screen w-screen bg-black overflow-hidden relative">
+          <SlideDisplay verse={currentVerse} settings={settings} isFullscreen={isFullscreen} toggleFullscreen={toggleFullscreen} isLoading={false} isLive={true} loadingMessage="" />
+          {!currentVerse && (
+            <div className="absolute bottom-4 left-4 flex items-center space-x-2 bg-black/50 px-3 py-1 rounded text-xs text-gray-400 font-mono z-50">
+              <div className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+              <span>{connectionStatus === 'connected' ? 'Live Signal Active' : 'Disconnected'}</span>
+            </div>
+          )}
+        </div>
+      </ModernLayout>
     );
   }
 
   return (
-    <div className="flex h-screen w-screen bg-black overflow-hidden font-sans">
-      <div className={`transition-all duration-300 w-full md:w-96 flex-shrink-0 z-20 flex flex-col h-full bg-gray-950 border-r border-gray-800`}>
-        <ControlPanel onSearch={handleSearch} isLoading={isLoading} currentVerse={currentVerse} insight={currentInsight} settings={settings} updateSettings={handleUpdateSettings} history={history} onSelectHistory={handleSelectHistory} onLaunchLive={handleLaunchLive} onManualPresent={handleManualPresent} onNext={() => handleNavigateVerse('next')} onPrev={() => handleNavigateVerse('prev')} />
-      </div>
-      <div className="flex-1 relative h-full bg-gray-900 flex flex-col">
-        <div className="flex-none p-4 bg-gray-900 border-b border-gray-800 flex justify-between items-center text-gray-400 text-xs uppercase tracking-widest font-bold z-10">
-           <span>Live Preview Console</span>
-           <span className="flex items-center text-green-500 gap-2"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> System Active</span>
+    <ModernLayout connectionStatus={connectionStatus}>
+      <div className="flex h-full w-full overflow-hidden">
+        {/* Control Panel */}
+        <div className="w-96 flex-shrink-0 z-20 flex flex-col h-full glass-effect-md border-r border-white/10">
+          <ControlPanel 
+            onSearch={handleSearch} 
+            isLoading={isLoading} 
+            currentVerse={currentVerse} 
+            insight={currentInsight} 
+            settings={settings} 
+            updateSettings={handleUpdateSettings} 
+            history={history} 
+            onSelectHistory={handleSelectHistory} 
+            onLaunchLive={handleLaunchLive} 
+            onManualPresent={handleManualPresent} 
+            onNext={() => handleNavigateVerse('next')} 
+            onPrev={() => handleNavigateVerse('prev')}
+            favorites={favorites}
+            collections={collections}
+            pinned={pinned}
+            onToggleFavorite={toggleFavorite}
+            onTogglePinned={togglePinned}
+            onCreateCollection={createCollection}
+            onAddToCollection={addToCollection}
+            onRemoveFromCollection={removeFromCollection}
+          />
         </div>
-        <div className="flex-1 relative bg-gray-950 overflow-hidden" ref={previewContainerRef}>
-          <div style={{ width: '1920px', height: '1080px', position: 'absolute', top: '50%', left: '50%', transform: `translate(-50%, -50%) scale(${previewScale})`, transformOrigin: 'center center' }} className="shadow-2xl border-2 border-gray-700 bg-black overflow-hidden flex-shrink-0 transition-transform duration-100 ease-out">
-            <SlideDisplay verse={currentVerse} settings={settings} isFullscreen={false} toggleFullscreen={() => {}} isLoading={isLoading} loadingMessage={loadingMessage} isLive={false} />
+
+        {/* Presentation Preview */}
+        <div className="flex-1 relative h-full bg-gradient-dark flex flex-col">
+          {/* Preview Header */}
+          <div className="flex-none px-6 py-4 glass-effect-md border-b border-white/10 flex justify-between items-center text-white/60 text-micro uppercase tracking-widest font-semibold z-10">
+            <span className="flex items-center gap-2">
+              <span className="text-small text-white/80">Live Preview Console</span>
+            </span>
+            <span className="flex items-center text-green-400 gap-2">
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+              System Active
+            </span>
           </div>
-          <div className="absolute bottom-4 right-4 text-xs font-bold text-white/10 uppercase pointer-events-none select-none">1920x1080 Scaled Preview</div>
+
+          {/* Preview Area */}
+          <div className="flex-1 relative overflow-hidden" ref={previewContainerRef}>
+            <div style={{ 
+              width: '1920px', 
+              height: '1080px', 
+              position: 'absolute', 
+              top: '50%', 
+              left: '50%', 
+              transform: `translate(-50%, -50%) scale(${previewScale})`, 
+              transformOrigin: 'center center' 
+            }} className="shadow-2xl border-2 border-white/10 bg-black overflow-hidden flex-shrink-0 transition-transform duration-100 ease-out rounded-lg">
+              <SlideDisplay 
+                verse={currentVerse} 
+                settings={settings} 
+                isFullscreen={false} 
+                toggleFullscreen={() => {}} 
+                isLoading={isLoading} 
+                loadingMessage={loadingMessage} 
+                isLive={false} 
+              />
+            </div>
+            <div className="absolute bottom-4 right-4 text-micro font-bold text-white/10 uppercase pointer-events-none select-none">1920x1080 Scaled Preview</div>
+          </div>
         </div>
       </div>
-    </div>
+    </ModernLayout>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 };
 
