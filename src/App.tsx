@@ -259,7 +259,7 @@ const AppContent: React.FC = () => {
   const handleSearch = async (query: string) => {
     setIsLoading(true);
     setLoadingMessage('');
-    if (!((import.meta as any).env?.VITE_API_KEY) && /alma|nephi|moroni/i.test(query)) {
+    if (!((import.meta as any).env?.VITE_API_KEY) && /nephi|jacob|enos|jarom|omni|mosiah|alma|helaman|mormon|ether|moroni|d&c|doctrine|covenants|moses|abraham|joseph smith|articles of faith|bom|pgp/i.test(query)) {
       setLoadingMessage('DOWNLOADING LIBRARY...');
     }
 

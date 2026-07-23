@@ -272,7 +272,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   type="text" 
                   value={query} 
                   onChange={(e) => setQuery(e.target.value)} 
-                  placeholder="Ex: John 3:16, 1 Nephi 3:7..." 
+                  placeholder="Ex: Matt1:2, matt 1:2, 1Nph 1:1..." 
                   className={cn(
                     'w-full glass-input rounded-lg pl-4 pr-12 py-3',
                     'text-body placeholder-white/30',
@@ -291,7 +291,16 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   <Search size={18} className="text-blue-400" />
                 </button>
               </form>
-              <p className="text-micro text-white/50">Bible, Book of Mormon, D&C, Pearl of Great Price</p>
+              <div className="space-y-2">
+                <p className="text-micro text-white/50">KJV Bible, Book of Mormon, Doctrine and Covenants, Pearl of Great Price</p>
+                <div className="flex flex-wrap gap-2 text-micro text-white/60">
+                  {['Matt1:2', 'JHN 3:16', '1Nph 1:1', 'ALM 5:14', 'MSE 1:39'].map((hint) => (
+                    <span key={hint} className="rounded-md border border-white/10 bg-white/5 px-2 py-1 font-mono">
+                      {hint}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Current Verse Navigation */}
