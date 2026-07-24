@@ -24,8 +24,7 @@ module.exports = {
           900: '#1e3a8a',
           950: '#172554'
         },
-        // Luxury dark theme colors
-        luxury: {
+        app: {
           bg: '#0f0f0f',
           'bg-secondary': '#1a1a2e',
           'bg-tertiary': '#252541',
@@ -145,7 +144,7 @@ module.exports = {
         },
       },
       transitionTimingFunction: {
-        'premium': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
     }
   },

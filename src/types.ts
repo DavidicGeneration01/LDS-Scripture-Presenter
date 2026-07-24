@@ -16,7 +16,7 @@ export interface VerseData {
   tags?: string[];
 }
 
-export interface AIInsight {
+export interface VerseInsight {
   context: string;
   theology: string;
   application: string;

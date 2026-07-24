@@ -4,14 +4,14 @@ import {
   Link as LinkIcon, PenTool, ChevronLeft, ChevronRight, Type, 
   Star, Pin, PlusSquare, Zap
 } from 'lucide-react';
-import { VerseData, AIInsight, PresentationSettings, ThemeMode, HistoryItem, Collection } from '../types';
+import { VerseData, VerseInsight, PresentationSettings, ThemeMode, HistoryItem, Collection } from '../types';
 import { cn } from '../utils/cn';
 
 interface ControlPanelProps {
   onSearch: (query: string) => void;
   isLoading: boolean;
   currentVerse: VerseData | null;
-  insight: AIInsight | null;
+  insight: VerseInsight | null;
   settings: PresentationSettings;
   updateSettings: (newSettings: Partial<PresentationSettings>) => void;
   history: HistoryItem[];
@@ -111,10 +111,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   return (
     <div className="h-full flex flex-col bg-gradient-dark text-white/90 w-full z-30 overflow-hidden">
-      {/* Header Section */}
       <div className="flex-shrink-0 px-6 py-5 glass-effect-md border-b border-white/10">
         <div className="space-y-4">
-          {/* Title */}
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg glass-button flex items-center justify-center">
@@ -125,7 +123,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             <p className="text-small text-white/50 ml-11">Operator Control</p>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex gap-2 flex-wrap">
             <button 
               onClick={onLaunchLive}
@@ -233,7 +230,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         </div>
       </div>
 
-      {/* Tab Navigation */}
       <div className="flex-shrink-0 flex border-b border-white/10 px-2 gap-1">
         {(['search', 'manual', 'insight', 'settings'] as const).map((tab) => (
           <button
@@ -260,12 +256,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         ))}
       </div>
 
-      {/* Content Area */}
       <div className="flex-1 overflow-y-auto no-scrollbar">
-        {/* SEARCH TAB */}
         {activeTab === 'search' && (
           <div className="p-6 space-y-6">
-            {/* Search Bar */}
             <div className="space-y-3">
               <form onSubmit={handleSearchSubmit} className="relative">
                 <input 
@@ -303,7 +296,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               </div>
             </div>
 
-            {/* Current Verse Navigation */}
             {currentVerse && (
               <div className="glass-effect-md rounded-lg p-4 space-y-3">
                 <p className="text-micro text-white/50 uppercase tracking-wider font-semibold">Current Verse</p>
@@ -331,7 +323,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               </div>
             )}
 
-            {/* History */}
             {history.length > 0 && (
               <div className="space-y-3">
                 <p className="text-micro text-white/50 uppercase tracking-wider font-semibold flex items-center gap-2">
@@ -362,7 +353,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           </div>
         )}
 
-        {/* MANUAL TAB */}
         {activeTab === 'manual' && (
           <div className="p-6 space-y-4 animate-fade-in">
             <div className="glass-effect-lg rounded-lg p-4">
@@ -415,7 +405,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           </div>
         )}
 
-        {/* INSIGHT TAB */}
         {activeTab === 'insight' && (
           <div className="p-6 animate-fade-in">
             {!currentVerse ? (
@@ -429,7 +418,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               <div className="flex flex-col items-center justify-center py-16 space-y-4">
                 <div className="w-8 h-8 rounded-full border-2 border-blue-400 border-t-transparent animate-spin" />
                 <p className="text-small text-white/70">Loading insights...</p>
-                <p className="text-micro text-white/50">(Requires Internet & API Key)</p>
+                <p className="text-micro text-white/50">Requires internet and an API key</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -456,10 +445,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           </div>
         )}
 
-        {/* SETTINGS TAB */}
         {activeTab === 'settings' && (
           <div className="p-6 space-y-6 animate-fade-in">
-            {/* Font Sizing */}
             <div className="space-y-3">
               <p className="text-micro text-white/70 uppercase tracking-wider font-semibold">Font Sizing</p>
               <div className="glass-effect-md rounded-lg p-4 space-y-4">
@@ -505,7 +492,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               </div>
             </div>
 
-            {/* Theme */}
             <div className="space-y-3">
               <p className="text-micro text-white/70 uppercase tracking-wider font-semibold">Theme</p>
               <div className="grid grid-cols-2 gap-2">
@@ -527,7 +513,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               </div>
             </div>
 
-            {/* Alignment */}
             <div className="space-y-3">
               <p className="text-micro text-white/70 uppercase tracking-wider font-semibold">Alignment</p>
               <div className="flex gap-2 glass-effect-md rounded-lg p-2">
@@ -549,7 +534,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               </div>
             </div>
 
-            {/* Show Reference Toggle */}
             <div className="glass-effect-md rounded-lg p-4 flex items-center justify-between">
               <p className="text-body text-white/80">Show Reference</p>
               <button
@@ -573,7 +557,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         )}
       </div>
 
-      {/* Footer */}
       <div className="flex-shrink-0 px-6 py-4 glass-effect-md border-t border-white/10 text-center text-micro text-white/40">
         Designed by David O. Alade
       </div>

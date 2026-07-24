@@ -3,8 +3,8 @@ import { ThemeProvider } from './context/ThemeContext';
 import ModernLayout from './components/Layout/ModernLayout';
 import ControlPanel from './components/ControlPanel';
 import SlideDisplay from './components/SlideDisplay';
-import { VerseData, AIInsight, PresentationSettings, ThemeMode, HistoryItem, BroadcastMessage, Collection } from './types';
-import { getVerseInsights } from './services/geminiService';
+import { VerseData, VerseInsight, PresentationSettings, ThemeMode, HistoryItem, BroadcastMessage, Collection } from './types';
+import { getVerseInsights } from './services/insightService';
 import { findScripture } from './services/scriptureService';
 import storage from './services/storageService';
 
@@ -21,7 +21,7 @@ const AppContent: React.FC = () => {
   });
 
   const [currentVerse, setCurrentVerse] = useState<VerseData | null>(null);
-  const [currentInsight, setCurrentInsight] = useState<AIInsight | null>(null);
+  const [currentInsight, setCurrentInsight] = useState<VerseInsight | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -193,7 +193,6 @@ const AppContent: React.FC = () => {
     setSettings(prev => ({ ...prev, ...newSettings }));
   };
 
-  // Favorites / Collections / Pinned handlers
   const toggleFavorite = (verse: VerseData) => {
     setFavorites(prev => {
       const exists = prev.some(f => f.reference === verse.reference);
@@ -241,8 +240,8 @@ const AppContent: React.FC = () => {
 
   const fetchInsightsForVerse = useCallback(async (verse: VerseData) => {
     setCurrentInsight(null);
-    const API_KEY = (import.meta as any).env?.VITE_API_KEY || (window as any).process?.env?.API_KEY || '';
-    if (navigator.onLine && API_KEY) {
+    const apiKey = (import.meta as any).env?.VITE_API_KEY || (window as any).process?.env?.API_KEY || '';
+    if (navigator.onLine && apiKey) {
       const insight = await getVerseInsights(verse.reference, verse.text);
       setCurrentInsight(insight);
     }
@@ -351,7 +350,6 @@ const AppContent: React.FC = () => {
   return (
     <ModernLayout connectionStatus={connectionStatus}>
       <div className="flex h-full w-full overflow-hidden">
-        {/* Control Panel */}
         <div className="w-96 flex-shrink-0 z-20 flex flex-col h-full glass-effect-md border-r border-white/10">
           <ControlPanel 
             onSearch={handleSearch} 
@@ -377,9 +375,7 @@ const AppContent: React.FC = () => {
           />
         </div>
 
-        {/* Presentation Preview */}
         <div className="flex-1 relative h-full bg-gradient-dark flex flex-col">
-          {/* Preview Header */}
           <div className="flex-none px-6 py-4 glass-effect-md border-b border-white/10 flex justify-between items-center text-white/60 text-micro uppercase tracking-widest font-semibold z-10">
             <span className="flex items-center gap-2">
               <span className="text-small text-white/80">Live Preview Console</span>
@@ -390,7 +386,6 @@ const AppContent: React.FC = () => {
             </span>
           </div>
 
-          {/* Preview Area */}
           <div className="flex-1 relative overflow-hidden" ref={previewContainerRef}>
             <div style={{ 
               width: '1920px', 

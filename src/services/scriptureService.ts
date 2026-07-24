@@ -134,12 +134,10 @@ const BIBLE_BOOKS = new Set(BOOK_ENTRIES.filter(entry => entry.volume === 'Old T
 const LDS_BOOKS = new Set(BOOK_ENTRIES.filter(entry => entry.volume === 'Book of Mormon' || entry.volume === 'Doctrine and Covenants' || entry.volume === 'Pearl of Great Price').map(entry => entry.book));
 const getBookEntry = (book: string) => BOOK_ENTRIES.find(entry => entry.book === book);
 
-// --- In-Memory Cache for LDS JSON databases ---
 let bomCache: any = null;
 let dcCache: any = null;
 let pgpCache: any = null;
 
-// --- Local Offline Library ---
 const OFFLINE_LIBRARY: Record<string, VerseData> = {
   "1_nephi_3_1": { reference: "1 Nephi 3:1", text: "And it came to pass that I, Nephi, returned from speaking with the Lord, to the tent of my father.", book: "1 Nephi", chapter: 3, verse: 1, version: "Book of Mormon" },
   "1_nephi_3_7": { reference: "1 Nephi 3:7", text: "And it came to pass that I, Nephi, said unto my father: I will go and do the things which the Lord hath commanded...", book: "1 Nephi", chapter: 3, verse: 7, version: "Book of Mormon" },
@@ -273,22 +271,11 @@ const fetchLdsScripture = async (book: string, chapter: number, verse: number): 
   };
 };
 
-const searchVerseAI = async (query: string): Promise<VerseData> => {
-  // Placeholder: in production this would call AI if API key present.
-  // For now, throw so callers fall back to public sources.
-  throw new Error('AI search not configured');
-};
-
 export const findScripture = async (query: string): Promise<VerseData> => {
   const parsed = parseQuery(query);
   if (!parsed) throw new Error("Invalid format. Try '1 Nephi 3:7'");
   const offlineKey = `${parsed.book.replace(/ /g, '_')}_${parsed.chapter}_${parsed.verse}`;
   if (OFFLINE_LIBRARY[offlineKey]) return OFFLINE_LIBRARY[offlineKey];
-
-  const API_KEY = (import.meta as any).env?.VITE_API_KEY || (window as any).process?.env?.API_KEY || '';
-  if (API_KEY && API_KEY.length > 5) {
-    try { return await searchVerseAI(query); } catch (e) { console.warn('AI search failed, falling back'); }
-  }
 
   if (navigator.onLine) {
     try {

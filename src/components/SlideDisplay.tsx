@@ -66,19 +66,16 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
     letterSpacing: '0.01em'
   };
 
-  // Empty state
   if (!verse && !isLoading) {
     return (
       <div className={cn(
         'relative flex flex-col items-center justify-center w-full h-full overflow-hidden',
         getThemeClasses(settings.theme)
       )}>
-        {/* Animated background gradient */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-white animate-pulse" />
         </div>
 
-        {/* Content */}
         <div className="relative z-10 text-center space-y-8 animate-fade-in">
           <div className="space-y-4">
             <h1 className="text-display-1 font-display tracking-wider">
@@ -95,7 +92,6 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
           </p>
         </div>
 
-        {/* Decorative corner accents */}
         <div className="absolute top-8 left-8 w-32 h-32 border border-current/10 rounded-full opacity-20" />
         <div className="absolute bottom-8 right-8 w-40 h-40 border border-current/5 rounded-full opacity-10" />
       </div>
@@ -111,16 +107,13 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
         getThemeClasses(settings.theme)
       )}
     >
-      {/* Gradient overlay */}
       <div className="absolute inset-0 pointer-events-none opacity-5 mix-blend-overlay">
         <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-white" />
       </div>
 
-      {/* Decorative corner elements */}
       <div className="absolute top-0 left-0 w-64 h-64 bg-current/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 opacity-30" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-current/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 opacity-20" />
 
-      {/* Fullscreen button */}
       {isLive && (
         <button 
           onClick={toggleFullscreen}
@@ -139,11 +132,9 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
         </button>
       )}
 
-      {/* Loading state */}
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-40 backdrop-blur-md animate-fade-in">
           <div className="flex flex-col items-center space-y-6">
-            {/* Animated spinner */}
             <div className="relative w-20 h-20">
               <div className="absolute inset-0 rounded-full border-2 border-white/10" />
               <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-white/80 animate-spin" />
@@ -155,7 +146,6 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
         </div>
       )}
 
-      {/* Verse content */}
       {verse && (
         <div 
           key={animateKey}
@@ -165,7 +155,6 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
             'animate-fade-in-up'
           )}
         >
-          {/* Verse text */}
           <div 
             className={cn(
               'font-serif mb-12 tracking-wide drop-shadow-lg',
@@ -176,7 +165,6 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
             {verse.text}
           </div>
 
-          {/* Reference section */}
           {settings.showReference && (
             <div className="mt-12 pt-8 border-t border-current/20 inline-block w-full animate-fade-in-up transition-all duration-500 delay-100">
               <h2 className={cn(
