@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { 
   Search, BookOpen, Settings, Info, History, MonitorPlay, 
   Link as LinkIcon, PenTool, ChevronLeft, ChevronRight, Type, 
-  Star, Pin, PlusSquare, Zap
+  Zap
 } from 'lucide-react';
-import { VerseData, VerseInsight, PresentationSettings, ThemeMode, HistoryItem, Collection } from '../types';
+import { VerseData, VerseInsight, PresentationSettings, ThemeMode, HistoryItem } from '../types';
 import { cn } from '../utils/cn';
+
+export type ControlPanelTab = 'search' | 'settings' | 'insight' | 'manual';
 
 interface ControlPanelProps {
   onSearch: (query: string) => void;
@@ -20,14 +22,8 @@ interface ControlPanelProps {
   onManualPresent: (verse: VerseData) => void;
   onNext: () => void;
   onPrev: () => void;
-  favorites: VerseData[];
-  collections: Collection[];
-  pinned: VerseData | null;
-  onToggleFavorite: (v: VerseData) => void;
-  onTogglePinned: (v: VerseData) => void;
-  onCreateCollection: (name: string) => Collection;
-  onAddToCollection: (collectionId: string, verse: VerseData) => void;
-  onRemoveFromCollection: (collectionId: string, verseRef: string) => void;
+  activeTab: ControlPanelTab;
+  onTabChange: (tab: ControlPanelTab) => void;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -43,20 +39,12 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onManualPresent,
   onNext,
   onPrev,
-  favorites, 
-  collections, 
-  pinned, 
-  onToggleFavorite, 
-  onTogglePinned, 
-  onCreateCollection, 
-  onAddToCollection, 
-  onRemoveFromCollection
+  activeTab,
+  onTabChange
 }) => {
   const [query, setQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'search' | 'settings' | 'insight' | 'manual'>('search');
   const [manualRef, setManualRef] = useState('');
   const [manualText, setManualText] = useState('');
-  const [showCollections, setShowCollections] = useState(false);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,28 +74,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     navigator.clipboard.writeText(url.toString());
     alert('Live Link copied to clipboard! Paste it in a new window/tab.');
   };
-
-  const handleSaveToCollection = (verse: VerseData) => {
-    if (!verse) return;
-    if (collections.length === 0) {
-      const name = window.prompt('No collections exist. Enter a name to create one:');
-      if (!name) return;
-      const col = onCreateCollection(name);
-      onAddToCollection(col.id, verse);
-      alert(`Created collection "${col.name}" and added ${verse.reference}`);
-      return;
-    }
-    setShowCollections(prev => !prev);
-  };
-
-  const handleChooseCollection = (id: string) => {
-    if (!currentVerse) return;
-    onAddToCollection(id, currentVerse);
-    setShowCollections(false);
-  };
-
-  const isFavorited = currentVerse && favorites.some(f => f.reference === currentVerse.reference);
-  const isPinned = currentVerse && pinned && pinned.reference === currentVerse.reference;
 
   return (
     <div className="h-full flex flex-col bg-gradient-dark text-white/90 w-full z-30 overflow-hidden">
@@ -150,82 +116,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             >
               <LinkIcon size={16} className="text-white/60" />
             </button>
-
-            {currentVerse && (
-              <>
-                <button 
-                  onClick={() => onToggleFavorite(currentVerse)}
-                  className={cn(
-                    'px-3 py-2.5 rounded-lg transition-all duration-200',
-                    'focus:outline-none focus:ring-2 focus:ring-white/50',
-                    isFavorited 
-                      ? 'glass-effect-accent text-yellow-400' 
-                      : 'glass-button text-white/60 hover:text-white'
-                  )}
-                  title="Toggle Favorite"
-                >
-                  <Star size={16} className={isFavorited ? 'fill-current' : ''} />
-                </button>
-
-                <button 
-                  onClick={() => onTogglePinned(currentVerse)}
-                  className={cn(
-                    'px-3 py-2.5 rounded-lg transition-all duration-200',
-                    'focus:outline-none focus:ring-2 focus:ring-white/50',
-                    isPinned 
-                      ? 'glass-effect-accent text-green-400' 
-                      : 'glass-button text-white/60 hover:text-white'
-                  )}
-                  title="Pin Verse"
-                >
-                  <Pin size={16} />
-                </button>
-
-                <div className="relative">
-                  <button 
-                    onClick={() => handleSaveToCollection(currentVerse)}
-                    className="px-3 py-2.5 rounded-lg glass-button hover:bg-white/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
-                    title="Add to Collection"
-                  >
-                    <PlusSquare size={16} className="text-white/60" />
-                  </button>
-
-                  {showCollections && (
-                    <div className="absolute right-0 mt-2 w-64 glass-effect-lg rounded-lg shadow-xl z-40 p-3 animate-fade-in-up">
-                      <p className="text-micro text-white/60 mb-3 uppercase tracking-wider">Select Collection</p>
-                      <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {collections.map(c => (
-                          <button
-                            key={c.id}
-                            onClick={() => handleChooseCollection(c.id)}
-                            className={cn(
-                              'w-full text-left py-2 px-3 rounded-lg transition-all duration-200',
-                              'glass-button hover:bg-white/10 text-small flex justify-between items-center'
-                            )}
-                          >
-                            <span>{c.name}</span>
-                            <span className="text-micro text-white/50">{c.items.length}</span>
-                          </button>
-                        ))}
-                      </div>
-                      <button 
-                        onClick={() => { 
-                          const n = prompt('New collection name:'); 
-                          if (n) { 
-                            const col = onCreateCollection(n); 
-                            onAddToCollection(col.id, currentVerse); 
-                            setShowCollections(false); 
-                          } 
-                        }}
-                        className="w-full mt-3 pt-3 border-t border-white/10 py-2 px-3 rounded-lg text-small text-blue-400 hover:text-blue-300 transition-colors"
-                      >
-                        + Create Collection
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
           </div>
         </div>
       </div>
@@ -234,7 +124,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         {(['search', 'manual', 'insight', 'settings'] as const).map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => onTabChange(tab)}
             className={cn(
               'flex-1 flex items-center justify-center gap-2 py-3 px-2',
               'text-small font-medium transition-all duration-200 relative',

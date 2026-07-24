@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import ModernLayout from './components/Layout/ModernLayout';
-import ControlPanel from './components/ControlPanel';
+import ControlPanel, { ControlPanelTab } from './components/ControlPanel';
 import SlideDisplay from './components/SlideDisplay';
-import { VerseData, VerseInsight, PresentationSettings, ThemeMode, HistoryItem, BroadcastMessage, Collection } from './types';
+import { VerseData, VerseInsight, PresentationSettings, ThemeMode, HistoryItem, BroadcastMessage } from './types';
 import { getVerseInsights } from './services/insightService';
 import { findScripture } from './services/scriptureService';
-import storage from './services/storageService';
 
 const BROADCAST_CHANNEL_NAME = 'lumina_live_channel';
 
@@ -26,6 +25,7 @@ const AppContent: React.FC = () => {
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected'>('disconnected');
+  const [controlPanelTab, setControlPanelTab] = useState<ControlPanelTab>('search');
 
   const channel = useMemo(() => {
     try {
@@ -56,18 +56,6 @@ const AppContent: React.FC = () => {
     } catch {
       return { fontSize: 4.0, fontMode: 'auto', theme: ThemeMode.Classic, showReference: true, alignment: 'center' };
     }
-  });
-
-  const [favorites, setFavorites] = useState<VerseData[]>(() => {
-    try { return storage.loadFavorites(); } catch { return []; }
-  });
-
-  const [collections, setCollections] = useState<Collection[]>(() => {
-    try { return storage.loadCollections(); } catch { return []; }
-  });
-
-  const [pinned, setPinned] = useState<VerseData | null>(() => {
-    try { return storage.loadPinned(); } catch { return null; }
   });
 
   const previewContainerRef = useRef<HTMLDivElement | null>(null);
@@ -151,9 +139,6 @@ const AppContent: React.FC = () => {
       try {
         localStorage.setItem('lumina_live_state', JSON.stringify({ verse: currentVerse, settings }));
         localStorage.setItem('lumina_settings', JSON.stringify(settings));
-        storage.saveFavorites(favorites);
-        storage.saveCollections(collections);
-        storage.savePinned(pinned);
       } catch (e) {}
     }
   }, [currentVerse, settings, isReceiverMode, channel]);
@@ -191,45 +176,6 @@ const AppContent: React.FC = () => {
 
   const handleUpdateSettings = (newSettings: Partial<PresentationSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
-  };
-
-  const toggleFavorite = (verse: VerseData) => {
-    setFavorites(prev => {
-      const exists = prev.some(f => f.reference === verse.reference);
-      const next = exists ? prev.filter(f => f.reference !== verse.reference) : [verse, ...prev];
-      storage.saveFavorites(next);
-      return next;
-    });
-  };
-
-  const togglePinned = (verse: VerseData) => {
-    setPinned(prev => {
-      const next = prev && prev.reference === verse.reference ? null : verse;
-      storage.savePinned(next);
-      return next;
-    });
-  };
-
-  const createCollection = (name: string) => {
-    const col: Collection = { id: Date.now().toString(), name, items: [] };
-    setCollections(prev => { const next = [col, ...prev]; storage.saveCollections(next); return next; });
-    return col;
-  };
-
-  const addToCollection = (collectionId: string, verse: VerseData) => {
-    setCollections(prev => {
-      const next = prev.map(c => c.id === collectionId ? ({ ...c, items: [verse, ...c.items.filter(i => i.reference !== verse.reference)] }) : c);
-      storage.saveCollections(next);
-      return next;
-    });
-  };
-
-  const removeFromCollection = (collectionId: string, verseRef: string) => {
-    setCollections(prev => {
-      const next = prev.map(c => c.id === collectionId ? ({ ...c, items: c.items.filter(i => i.reference !== verseRef) }) : c);
-      storage.saveCollections(next);
-      return next;
-    });
   };
 
   const toggleFullscreen = async () => {
@@ -348,7 +294,7 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <ModernLayout connectionStatus={connectionStatus}>
+    <ModernLayout connectionStatus={connectionStatus} onSettingsClick={() => setControlPanelTab('settings')}>
       <div className="flex h-full w-full overflow-hidden">
         <div className="w-96 flex-shrink-0 z-20 flex flex-col h-full glass-effect-md border-r border-white/10">
           <ControlPanel 
@@ -364,14 +310,8 @@ const AppContent: React.FC = () => {
             onManualPresent={handleManualPresent} 
             onNext={() => handleNavigateVerse('next')} 
             onPrev={() => handleNavigateVerse('prev')}
-            favorites={favorites}
-            collections={collections}
-            pinned={pinned}
-            onToggleFavorite={toggleFavorite}
-            onTogglePinned={togglePinned}
-            onCreateCollection={createCollection}
-            onAddToCollection={addToCollection}
-            onRemoveFromCollection={removeFromCollection}
+            activeTab={controlPanelTab}
+            onTabChange={setControlPanelTab}
           />
         </div>
 

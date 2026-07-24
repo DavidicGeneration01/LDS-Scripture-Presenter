@@ -5,12 +5,14 @@ interface ModernLayoutProps {
   children: ReactNode;
   isLive?: boolean;
   connectionStatus?: 'connected' | 'disconnected';
+  onSettingsClick?: () => void;
 }
 
 const ModernLayout: React.FC<ModernLayoutProps> = ({ 
   children, 
   isLive = false,
-  connectionStatus = 'disconnected'
+  connectionStatus = 'disconnected',
+  onSettingsClick
 }) => {
   if (isLive) {
     return (
@@ -23,7 +25,7 @@ const ModernLayout: React.FC<ModernLayoutProps> = ({
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#0f0f0f]">
       <div className="flex-1 flex flex-col overflow-hidden">
-        <HeaderBar connectionStatus={connectionStatus} />
+        <HeaderBar connectionStatus={connectionStatus} onSettingsClick={onSettingsClick} />
         <div className="flex-1 overflow-hidden">
           {children}
         </div>
