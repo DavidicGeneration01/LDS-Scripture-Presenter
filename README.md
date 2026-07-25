@@ -31,3 +31,6 @@ Youtube - https://github.com/search?q=book+of+mormon+api&type=repositories&utm_s
 - Latter-day Saint scripture references are fetched from JSON scripture data when the app is online.
 - `BroadcastChannel` and `localStorage` keep the operator and live windows in sync.
 - The manual tab is available for custom text or offline use.
+
+# Courtesy
+David O. Alade
